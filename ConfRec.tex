@@ -15,7 +15,7 @@
 \usepackage{algpseudocode}
 \begin{document}
 
-\title{A Sample {\ttlit ACM} SIG Proceedings Paper in LaTeX Format}
+\title{AVERec: A random walk based academic venue recommendation model}
 
 \numberofauthors{1}
 \author{
@@ -73,7 +73,7 @@ Zhen Chen, Huizhen Jiang, Haifeng Liu\\
 
 \maketitle
 \begin{abstract}
-
+In this work, we propose AVERec, a novel random walk based academic venue recommendation model. AVERec models the co-publishing network with two kinds of associations, i.e. co-author relations and author-venue relations. We exploit three academic factors to define a transfer matrix with bias which drives a random walk with restart model running on the co-publishing network. The three academic factors, i.e. co-publishing frequency, weight of relations and similar-level preferred, are inspired by that, researchers are more likely to contact academic entities with high co-publishing frequency and similar academic level, as well as the weight of the two kinds of associations should be differentiated. We conduct extensive experiments on DBLP data set in order to measure AVERec. The results demonstrate that AVERec significantly improves the performance on precision, recall and F1 when compared to the baseline method.
 \end{abstract}
 
 % A category with the (minimum) three required fields
@@ -86,9 +86,86 @@ Zhen Chen, Huizhen Jiang, Haifeng Liu\\
 \keywords{ACM proceedings, \LaTeX, text tagging}
 
 \section{Introduction}
-
+Introduction...
 \section{Related work}
+Related work...
+\section{Academic Venue Recommendation Model}
+The AVERec academic venue recommendation model is designed to mine specific academic venues and make personalized recommendation for researchers. The model is inspired by the truth that, researchers usually desire to contact with suitable academic venues, i.e. keep concern on high-quality and fruitful academic venues, participate in academic conferences which are closely related to their research, contribute to some venues in where they are possible to publish research achievements. Besides, AVERec is a evolution from a basic RWR model which has been proved to be competent for calculating the similarity of nodes in networks. Most of all, the three academic factors we introduced, co-publishing frequency, weight of relations and similar-level preferred, aim at biasing the random walk, such that it will more easily traverse to the positive nodes. The detailed process of AVERec is described below. Additionally, the structure is illustrated in Figure~\ref{Fig1}.
+\begin{figure}[!ht]
+\centering
+\includegraphics [width=3.5in]{Fig1.pdf}
+\caption{The structure of AVERec.}
+\label{Fig1}
+\end{figure}
+\subsection{Overview of AVERec}
+In this work, we model a kind of co-publishing networks which are characterized by researchers and academic venues. Figure~\ref{Fig2} shows an example of the network. The colorized nodes represent venues A, B, C and D. As well as the three researchers Bob, David and Alice collaborate to write five papers which are published in the four venues respectively (note that Bob publish two papers in venue A). The nodes (venues and researchers) along with links (co-author relations and author-venue relations) form the co-publishing networks. We define two kinds of node sets, $Venues$ and $Authors$.
+\begin{figure}[!ht]
+\centering
+\includegraphics [width=2.5in]{Fig2.pdf}
+\caption{An example of co-publishing network.}
+\label{Fig2}
+\end{figure}
+In AVERec academic venue recommendation model, whether a venue should be recommended depends on its importance to the target researcher. The importance is defined by the rank score of the venue, which is determined by two factors, i.e. the number of neighbor nodes and the rank score of incident nodes. Equation~\ref{equ1} describes this theory.
+\begin{equation}
+\label{equ1}
+AR(p_{i})=\frac{1-\alpha}{N}+\alpha \sum_{p_{j}\in A(p_{i})}AR(p_{j})P(p_{j},p_{i})
+\end{equation}
+$AR$ represents the rank score vector. $AR(p_{i})$ is the rank score of node $p_{i}$. $A(p_{i})$ is the set of nodes incident to node $p_{i}$. $P(p_{j},p_{i})$ is the transition probability from node $p_{j}$ to node $p_{i}$. $\alpha$ is the damping factor. When the AVERec is run on the network to compute node ranking. Starting from source node $p_{0}$, an imaginary walker randomly walk in the network. The walker has two choice, i.e. with probability $\alpha$, walk to next node $p_{x}$, which is one of $p_{0}$'s direct neighbors ($p_{x}\in A(p_{0})$), with probability $1-\alpha$, return to source vertex $p_{0}$. Equation~\ref{equ1} represents one step to get rank score for node $p_{i}$. With respect to all node in the whole network, the approach is defined by equation~\ref{equ2}, which is an iterative process.
+\begin{equation}
+\label{equ2}
+AR^{(t+1)}=\alpha \mathbf{S}AR^{(t)}+(1-\alpha)q
+\end{equation}
+$AR^{t}$ is the rank score vector at step $t$. $q$ is a row vector $(0,...,1,...,0)$. It should be noticed that, $AR_{0}=q$. The rank score of target node is $1$, while others' are $0$. $\mathbf{S}$ is the transfer matrix, representing the probability for each node to skip to next node. For basic RWR model, the cell of matrix $\mathbf{S}$ (i.e. $P(p_{j},p_{i})$ in Equation~\ref{equ1}) is defined as $\frac{1}{L(p_{i})}$. ($L(p_{i})$ is the number of node $p_{i}$'s neighbors). It means that, the walker have same probability to skip to next node. In AVERec, we do some guidance work by introducing three academic factors. The change of $P(p_{j},p_{i})$ can lead the walker skips with preference, which will be proved to be better in section~\ref{section:evaluation} for academic venue recommendation.
 
+The detailed process of AVERec is described below corresponding with the structure in Figure~\ref{Fig1}.
+
+\begin{itemize}
+  \item \emph{Step1}. The initial input data is a set of publications with authors' information and venues' information. AVERec firstly extracts the co-author relations and author-venue relations. Then, generates the co-publishing networks. There is a link between two authors if they coauthored at least one paper, as well as a link between researcher and venue if the researcher published a paper in the venue.
+  \item \emph{Step2}. Following initializing the rank score of nodes and weight of edges, AVERec run on the network. During the random walk process, the walker skip to next node with a modified probability by considering the three academic factors. The walk will stop until the rank score is approximately convergent or the iterations come to upper limit.
+  \item \emph{Step3}. After getting the convergent rank score of each node, AVERec sorts the venue in accordance to their corresponding rank scores. Finally, removing the venues with which the target author have contacted, the Top-N venues are recommended to the target author.
+\end{itemize}
+
+We present below the details of how the transfer matrix with bias is computed by considering the three academic factors.
+
+\subsection{Transfer Matrix with Bias}
+As the example shown in Figure~\ref{Fig2}, there are seven academic entities. With respect to recommending venues to Bob, he has never contacted with venue C and D. According to the characteristics of the random walk with restart model, the walker can walk from Bob to C and D via David and Alice respectively. After several times iterative walking, venues C and D are recommended to Bob based on the sorted rank score. However, there are several academic factors that can be introduced to meet the real scene. We exploit three of them to redefine the transfer matrix in random walk with restart model.
+
+Generally, researchers prefer contact the academic entities (researchers and venues) which have high frequency of interaction with them, i.e. high publishing frequency in the venue or high collaborating frequency with the researchers. As shown in Figure~\ref{Fig2}, we think Bob prefer contacting David rather than Alice, because Bob collaborated with David twice while Alice once. David looks more important than Alice for Bob. As well as Bob prefer contacting venue A rather than B, since that Bob published two papers in venue A. Based on this assumption, We define co-publishing frequency as Equation~\ref{equ3} which is a part of the links' weight.
+\begin{equation}
+\label{equ3}
+F_{i,j}=\left\{\begin{array}{ll}
+cp_{i,j} & i\in Author,\quad j\in Venues\\
+ct_{i,j} & i,j\in Authors\\
+\end{array}\right.
+\end{equation}
+Where $cp_{i,j}$ is the count of author $i$'s publications in venue $j$. $ct_{i,j}$ is $i$'s collaborating times with author $j$.
+
+In addition, there are two kinds of associations in co-publishing networks, i.e. co-author relations and author venue relations. In terms of basic random walk model, the difference between these two relations is ignored. Author-venue relations seems more important than co-author relations, because the event of publishing a paper in the venue is more ponderable when profiling the researchers' interest. This proposition has been proved in subsequent experiment which can lead better performance when making academic recommendation. We measure the weight of relations by Equation~\ref{equ4} based on a ratio $\beta$.
+\begin{equation}
+\label{equ4}
+W_{i,j}=\beta F_{i,j}
+\end{equation}
+The ratio $\beta$ is a variable empirical value. In our experiments, $\beta$ is set as 20 for author-venue relations and 1 for co-author relations.
+
+Finally, we proposed an assumption: the interest features of academic entities can be more accurately reflected by similar level neighbors. In terms of researchers, they prefer contacting other researchers at similar academic levels and publishing papers in the venue which have potential to accept. In other words, the relations between similar-level academic entities are more weighty. The walker should walk along these nodes with more probability in AVERec. In order to measure the similarity of academic entities, we define a simple metric as equation~\ref{equ5}.
+\begin{equation}
+\label{equ5}
+LevSim_{i,j}=1-\frac{\Vert AR_{i}-AR_{j}\Vert}{\max_{x\in L(i)}(\Vert AR_{i}-AR_{x}\Vert)}
+\end{equation}
+This Equation~\ref{equ5} aim at finding the neighbor with smallest rank score disparities based on a normalization method. When computing the transfer probability $S_{i,j}$ from node $i$ to node $j$, our AVRec model adopts equation~\ref{equ6}. With equation~\ref{equ6}, the walker can run on the network with modified bias.
+\begin{equation}
+\label{equ6}
+\mathbf{S}_{i,j}=\frac{W_{i,j}}{\sum_{x\in L(i)}W_{i,x}}LevSim_{i,j}
+\end{equation}
+
+\section{Evaluation and analysis}
+\label{section:evaluation}
+We conducted extensive experiments using data from DBLP~\cite{Ley:DBLP}. In this section, we describe three academic venue recommendation approaches as comparison, the statistics of data set, the evaluation metrics and our experimental procedure for evaluating the performance of AVRec, as well as detailed analysis of the results.
+
+\subsection{Three Comparison Approaches}
+To measure the performance of AVERec, we conducted three comparison approaches, i.e. the basic random walk with restart model (RWR), a topic-based model and a friends-based model.
+
+Similar to popular random walk models, the details and verification method of RWR is just like AVERec, except for the definition of transfer matrix with bias. The topic-based method is a content-based recommendation approach in the strict sense. The core of the approach is to compute the similarity between researchers and venues. In this implementation, we regarded the topic distribution of researchers' publications content and venues's publications content as feature vector respectively, which is calculated by LDA(Latent Dirichlet Allocation) model~\cite{blei2003latent}. The similarity of researchers and venues is defined by the Cosine Similarity based on these feature vectors. The friends-based model is a kind of collaborative filtering recommendation approach. Its basis of recommending venues is the number of collaborators who have relations with the venues. In this implementation, we
 %\begin{table}
 %\centering
 %\caption{Frequency of Special Characters}
@@ -114,28 +191,18 @@ Zhen Chen, Huizhen Jiang, Haifeng Liu\\
 %\end{table*}
 % end the environment with {table*}, NOTE not {table}!
 
-\begin{figure}
-\centering
-\includegraphics [width=3.5in]{Fig1.pdf}
-\caption{A sample black and white graphic (.eps format).}
-\end{figure}
-\begin{figure}
-\centering
-\includegraphics [width=2.5in]{Fig2.pdf}
-\caption{A sample black and white graphic (.eps format).}
-\end{figure}
 
-\begin{figure}
+\begin{figure}[!ht]
 \centering
 \includegraphics [width=3.5in]{Fig3.eps}
 \caption{A sample black and white graphic (.eps format).}
 \end{figure}
-\begin{figure*}
+\begin{figure*}[!ht]
 \centering
 \includegraphics [width=\textwidth]{Fig4.eps}
 \caption{A sample black and white graphic (.eps format).}
 \end{figure*}
-\begin{figure*}
+\begin{figure*}[!ht]
 \centering
 \includegraphics [width=\textwidth]{Fig5.eps}
 \caption{A sample black and white graphic (.eps format).}
@@ -162,7 +229,6 @@ Zhen Chen, Huizhen Jiang, Haifeng Liu\\
 %\caption{A sample black and white graphic (.eps format)
 %that needs to span two columns of text.}
 %\end{figure*}
-
 \section{Conclusions}
 
 %\end{document}  % This is where a 'short' article might terminate
