@@ -15,7 +15,7 @@
 \usepackage{algpseudocode}
 \begin{document}
 
-\title{AVERec: A random walk based academic venues recommendation model}
+\title{AVERec: A Random Walk Based Academic Venues Recommendation}
 
 \numberofauthors{1}
 \author{
@@ -93,7 +93,7 @@ As the main platforms of academic community and the bridge of connecting researc
 Considering the inherent requirements, a variety of methods relating to academic venues recommendation have been proposed, involving some content-based, social network-based and social aware based approaches~\cite{xia2013socially,xia2014socially}. There are also some smart conferences systems or solutions help to improve participate experience and incidentally solve the conferences recommendation problems. However, most of the researches can not complete the aforesaid problems. In this work, we integrated the academic entities (i.e. authors, publications and venues) into a co-publishing network, which contains two kinds of nodes (author and venue) and two kinds of associations (co-author relations and author-venue relations). We proposed three commonsense  hypotheses, i.e. the co-publishing frequency can reflect the weight of the relations, the two kinds of relations show different in importance for researchers, most researchers more likely contact those similar-level academic entities. AVERec, a novel random walk based academic venue recommendation model was proposed by introducing the three academic factors, co-publishing frequency, weight of relations and similar-level preferred, into a random walk with restart model. In summary, we make the following contributions in this paper. 1) To deal with academic venues recommendation in the context of big scholarly data, we develop AVERec based on a random walk with restart. AVERec is more favourable in terms of achieving remarkable personalized academic venues recommendation. 2) To reveal researchers' real intention of academic venues, we defined a transfer metrics with bias by utilizing the aforementioned three academic factors. which can lead the random walk run on co-publishing networks with preference. 3) Finally, we conducted extensive experiments on a subset of DBLP data set to evaluate the performance of AVERec. Moreover, we also measured the basic RWR model, a topic-based model and a friend-based model for comparison. Promising results are presented and analyzed.
 
 \section{Related work}
-Related work...
+Quite a number of recommender systems and algorithms involving the academic venues recommendation have been presented and discussed by various researchers in recent years.
 \section{Academic Venue Recommendation Model}
 The AVERec academic venue recommendation model is designed to mine specific academic venues and make personalized recommendation for researchers. The model is inspired by the truth that, researchers usually desire to contact with suitable academic venues, i.e. keep concern on high-quality and fruitful academic venues, participate in academic conferences which are closely related to their research, contribute to some venues in where they are possible to publish research achievements. Besides, AVERec is a evolution from a basic RWR model which has been proved to be competent for calculating the similarity of nodes in networks. Most of all, the three academic factors we introduced, co-publishing frequency, weight of relations and similar-level preferred, aim at biasing the random walk, such that it will more easily traverse to the positive nodes. The detailed process of AVERec is described below. Additionally, the structure is illustrated in Figure~\ref{Fig1}.
 \begin{figure}[!ht]
@@ -214,7 +214,7 @@ In this section, we firstly conducted several experiments about AVERec, basic RW
 \label{fig5}
 \end{figure*}
 
-Figure~\ref{fig4} shows the performance of AVERec, basic RWR, topic-based and friends-based recommendation model. The $x$ axis represents the length of recommendation list, which is range in 1 to 39. the $y$ axis represents precision, recall and F1 score respectively. In case of Figure~\ref{fig4}(a), all lines roughly show coincident downtrend. However, AVERec and basic RWR performs better in precision as a whole. On the view of range 1 to 11 on $x$ axis, AVRec get higher precision, as well as that it come to a peak value $8.7\%$ at point 3. With the growth of recommendation list, the performance of the four recommendation approach tend to be similar.In case of Figure~\ref{fig4}(b), the lines rise obviously. AVERec and basic RWR have no significant difference, but the their recall performs better than that of topic-based and friend-based approach. With the number of recommended venues level off to the sum of venues, the recall approach 1. According to Figure~\ref{fig4}(c), the F1 score shows similar trend with precision. The F1 score of AVERec reaches the highest value of $12.95\%$ when recommend 9 venues for each researchers. The upgrade rate is $11.3\%$ comparing to basic RWR. It is worth mentioning that, AVERec reaches its peak at point 9, while basic RWR get highest F1 score at point 11. That means the recommendation efficiency of AVERec is higher.
+Figure~\ref{fig4} shows the performance of AVERec, basic RWR, topic-based and friends-based recommendation model. The $x$ axis represents the length of recommendation list, which is range in 1 to 39. the $y$ axis represents precision, recall and F1 score respectively. In case of Figure~\ref{fig4}(a), all lines roughly show coincident downtrend. However, AVERec and basic RWR performs better in precision as a whole. On the view of range 1 to 11 on $x$ axis, AVRec get higher precision, as well as that it come to a peak value $8.7\%$ at point 3. With the growth of recommendation list, the performance of the four recommendation approach tend to be similar.In case of Figure~\ref{fig4}(b), the lines rise obviously. AVERec and basic RWR have no significant difference, but the their recall performs better than that of topic-based and friend-based approach. With the number of recommended venues level off to the sum of venues, the recall approach 1. According to Figure~\ref{fig4}(c), the F1 score shows similar trend with precision. The F1 score of AVERec reaches the highest value of $12.95\%$ when recommend 9 venues for each researchers. The upgrade rate ($\frac{F1(AVERec)-F1(RWR)}{F1(RWR)}$) is $11.3\%$ comparing to basic RWR. It is worth mentioning that, AVERec reaches its peak at point 9, while basic RWR get highest F1 score at point 11. That means the recommendation efficiency of AVERec is higher.
 
 These experiments demonstrated that, the random walk with restart based model can get more accurate academic venue recommendation than topic based and friend based approaches. What's more, our work on transfer matrix with bias do improve the performance of AVERec, and make it more efficient.
 
@@ -222,54 +222,7 @@ We also made several extensive experiments to measure the performance of AVERec 
 
 
 From Figure~\ref{fig5}, we can see significant difference of the effect on different sets of researchers even though they show a similar trend in precision, recall and F1 score respectively. In Figure~\ref{fig5}(c), Especially the AVERec can get highest value $16.24\%$ of F1 score at point 9 when making academic venues recommendation for the researchers with 2 to 8 publications. The results mean that, AVERec can do better at recommending academic venues for researchers with fewer publications, i.e. the relatively newcomer, which meet our original intention of recommending academic venues for newcomer well.
-%\begin{table}
-%\centering
-%\caption{Frequency of Special Characters}
-%\begin{tabular}{|c|c|l|} \hline
-%Non-English or Math&Frequency&Comments\\ \hline
-%\O & 1 in 1,000& For Swedish names\\ \hline
-%$\pi$ & 1 in 5& Common in math\\ \hline
-%\$ & 4 in 5 & Used in business\\ \hline
-%$\Psi^2_1$ & 1 in 40,000& Unexplained usage\\
-%\hline\end{tabular}
-%\end{table}
 
-
-%\begin{table*}
-%\centering
-%\caption{Some Typical Commands}
-%\begin{tabular}{|c|c|l|} \hline
-%Command&A Number&Comments\\ \hline
-%\texttt{{\char'134}alignauthor} & 100& Author alignment\\ \hline
-%\texttt{{\char'134}numberofauthors}& 200& Author enumeration\\ \hline
-%\texttt{{\char'134}table}& 300 & For tables\\ \hline
-%\texttt{{\char'134}table*}& 400& For wider tables\\ \hline\end{tabular}
-%\end{table*}
-% end the environment with {table*}, NOTE not {table}!
-
-
-%
-%\begin{figure}
-%\centering
-%\epsfig{file=fly.eps, height=1in, width=1in}
-%\caption{A sample black and white graphic (.eps format)
-%that has been resized with the \texttt{epsfig} command.}
-%\end{figure}
-
-%
-%\begin{figure}
-%\centering
-%\psfig{file=rosette.ps, height=1in, width=1in,}
-%\caption{A sample black and white graphic (.ps format) that has
-%been resized with the \texttt{psfig} command.}
-%\end{figure}
-
-%\begin{figure*}
-%\centering
-%\epsfig{file=flies.eps}
-%\caption{A sample black and white graphic (.eps format)
-%that needs to span two columns of text.}
-%\end{figure*}
 \section{Conclusions}
 
 %\end{document}  % This is where a 'short' article might terminate
@@ -279,7 +232,7 @@ From Figure~\ref{fig5}, we can see significant difference of the effect on diffe
 
 \bibliographystyle{abbrv}
 \bibliography{ConfRec}
-\appendix
+%\appendix
 %Appendix A
 \balancecolumns
 \end{document}
